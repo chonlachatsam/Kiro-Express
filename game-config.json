@@ -1,0 +1,36 @@
+﻿{
+  "game": {
+    "canvas": { "width": 400, "height": 600 },
+    "groundHeight": 60
+  },
+  "physics": {
+    "gravity": 0.14,
+    "jumpVelocity": -5.0,
+    "maxFallSpeed": 5,
+    "description": "Moon-like gravity for floaty feel"
+  },
+  "pipe": {
+    "speed": 1.6,
+    "width": 60,
+    "gapSize": 155,
+    "spawnIntervalMs": 1700,
+    "capHeight": 20,
+    "capOverhang": 6
+  },
+  "ghosty": {
+    "size": 44,
+    "hitboxPadding": 8,
+    "startX": 90
+  },
+  "colors": {
+    "skyTop": "#5BA4CF",
+    "skyBottom": "#87CEEB",
+    "ground": "#8B6914",
+    "grass": "#5D8A3C",
+    "pipeBody": "#4CAF50",
+    "pipeCap": "#388E3C"
+  },
+  "storage": {
+    "highScoreKey": "flappyKiroHighScore"
+  }
+}
