@@ -1,0 +1,23 @@
+﻿* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+canvas {
+  display: block;
+  border: 3px solid #4CAF50;
+  border-radius: 4px;
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
+  max-width: 100%;
+}

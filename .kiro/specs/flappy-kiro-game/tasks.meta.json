@@ -1,0 +1,283 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Set up project scaffold": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992411
+      },
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790666002429
+      }
+    ],
+    "2.1 ประกาศ constants ทั้งหมดใน `game.js` (GRAVITY, JUMP_FORCE, MAX_FALL_SPEED, PIPE_SPEED, PIPE_WIDTH, PIPE_GAP, PIPE_INTERVAL, GHOSTY_SIZE, HITBOX_SHRINK)": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992515
+      }
+    ],
+    "2.2 ประกาศ state machine: `START`, `PLAYING`, `GAMEOVER` และ GameSession object": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992560
+      }
+    ],
+    "3.1 สร้าง `Ghosty` class: constructor, โหลด `assets/ghosty.png`, กำหนด x=90, y=center": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992603
+      }
+    ],
+    "3.2 implement `ghosty.update()` — ใช้ gravity สะสม velocity และ clamp ที่ MAX_FALL_SPEED แล้วอัปเดต y": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992664
+      }
+    ],
+    "3.5 implement `ghosty.jump()` — set `vy = JUMP_FORCE`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992704
+      }
+    ],
+    "3.6 implement `ghosty.render(ctx)` — `drawImage` sprite ที่ตำแหน่ง (x, y) ขนาด GHOSTY_SIZE": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992742
+      }
+    ],
+    "3.7 implement `ghosty.hitbox()` — คำนวณ AABB ที่หดเข้า HITBOX_SHRINK (20%) ทุกด้าน": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992787
+      }
+    ],
+    "4.1 สร้าง `Pipe` class: constructor รับ `x` และ `gapY`, กำหนด `passed = false`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992826
+      }
+    ],
+    "4.2 implement `pipe.update()` — `x -= PIPE_SPEED` ทุก frame": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992865
+      }
+    ],
+    "4.4 implement `pipe.render(ctx)` — วาด top pipe และ bottom pipe สีเขียว #4CAF50 ขอบ #388E3C": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992931
+      }
+    ],
+    "4.5 implement `pipe.hitboxTop()` และ `pipe.hitboxBottom()` — AABB ของท่อบนและท่อล่าง": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665992977
+      }
+    ],
+    "4.6 implement `pipe.isOffScreen()` — คืน true เมื่อ `x + PIPE_WIDTH < 0`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993025
+      }
+    ],
+    "4.7 implement `spawnPipeIfNeeded()` — สร้าง Pipe ใหม่ทุก PIPE_INTERVAL ms โดย gapY สุ่มในช่วงปลอดภัย": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993068
+      }
+    ],
+    "5. Checkpoint — ตรวจสอบว่า Ghosty และ Pipe render ถูกต้อง": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993108
+      }
+    ],
+    "6.1 implement `overlaps(a, b)` — AABB overlap function": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993147
+      }
+    ],
+    "6.2 ตรวจ `ghosty.hitbox()` กับ `pipe.hitboxTop()` และ `pipe.hitboxBottom()` ทุก pipe; trigger `triggerGameOver()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993184
+      }
+    ],
+    "6.3 ตรวจ Ghosty ตกพื้น (`y + GHOSTY_SIZE >= groundY`) และชนเพดาน (`y <= 0`); trigger `triggerGameOver()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993223
+      }
+    ],
+    "6.4 implement `triggerGameOver()` — หยุด loop, เล่น `game_over.wav`, set state `GAMEOVER`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993262
+      }
+    ],
+    "7.1 ตรวจ `pipe.passed` และเพิ่ม score ทีละ 1 เมื่อ Ghosty ผ่าน pipe (set `pipe.passed = true`)": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993299
+      }
+    ],
+    "7.3 implement `cleanupPipes()` — ลบ pipe ที่ `isOffScreen()` ออกจาก array": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993335
+      }
+    ],
+    "7.5 อัปเดต `highScore = Math.max(highScore, score)` และ save ลง localStorage key `flappyKiroHighScore`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993376
+      }
+    ],
+    "7.6 โหลด `highScore` จาก localStorage เมื่อ `initGame()`; handle `NaN` ด้วย `|| 0` และ wrap ด้วย try/catch": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993416
+      }
+    ],
+    "7.9 วาด HUD บน canvas — \"Score: X | High: Y\" ระหว่างเล่น": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993452
+      }
+    ],
+    "8.1 implement `drawStartScreen(ctx)` — วาดชื่อเกม, Ghosty sprite, high score, และ \"Press Space or Click to Start\"": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993489
+      }
+    ],
+    "8.2 implement `drawGameOverScreen(ctx)` — วาด \"Game Over\", final score, updated high score, และ \"Press Space or Click to Restart\"": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993526
+      }
+    ],
+    "9.1 implement `AudioManager.init()` — สร้าง `Audio` objects สำหรับ `jump.wav` และ `game_over.wav`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993566
+      }
+    ],
+    "9.2 implement `AudioManager.playJump()` — reset `currentTime` แล้ว `play().catch(() => {})`, เรียกใน `ghosty.jump()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993605
+      }
+    ],
+    "9.3 implement `AudioManager.playGameOver()` — reset `currentTime` แล้ว `play().catch(() => {})`, เรียกใน `triggerGameOver()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993649
+      }
+    ],
+    "10.1 ผูก `keydown` (Space, ArrowUp) กับ `handleInput()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993694
+      }
+    ],
+    "10.2 ผูก `click` และ `touchstart` บน canvas กับ `handleInput()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993731
+      }
+    ],
+    "10.3 implement `handleInput()` — ถ้า `START` หรือ `GAMEOVER` เรียก `startGame()`; ถ้า `PLAYING` เรียก `ghosty.jump()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993768
+      }
+    ],
+    "11.1 implement `initGame()` — reset Ghosty, Pipes, Score; set state `START`; โหลด highScore": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993807
+      }
+    ],
+    "11.2 implement `startGame()` — transition state → `PLAYING`; เรียก `ghosty.jump()`": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993845
+      }
+    ],
+    "11.3 implement `gameLoop(timestamp)` ด้วย `requestAnimationFrame` — เรียก `update()` และ `render()` ตาม state": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993883
+      }
+    ],
+    "11.4 implement `update()` — เรียก `ghosty.update()`, pipe updates, spawn, collision, score, cleanup ตามลำดับ": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993920
+      }
+    ],
+    "11.5 implement `render()` — วาด background (#87CEEB), pipes, ghosty, ground (#8B4513), HUD หรือ screen ตาม state": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665993964
+      }
+    ],
+    "11.6 เรียก `initGame()` และ start `requestAnimationFrame` loop เมื่อ script โหลด": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665994040
+      }
+    ],
+    "12. Final checkpoint — Ensure all tests pass": [
+      {
+        "executionId": "f43636a3-5549-4095-bcaf-1fa2252a61f9",
+        "chatSessionId": "sess_80afcf2c-a438-4dbf-af2c-6544637ed21e",
+        "timestamp": 1790665994075
+      }
+    ]
+  }
+}
