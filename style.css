@@ -14,12 +14,22 @@ body {
   font-family: Arial, sans-serif;
 }
 
+@keyframes rgb-border {
+  0%   { border-color: #ff0000; box-shadow: 0 0 18px 4px rgba(255,0,0,0.7),   0 0 40px 8px rgba(255,0,0,0.25); }
+  16%  { border-color: #ff8800; box-shadow: 0 0 18px 4px rgba(255,136,0,0.7), 0 0 40px 8px rgba(255,136,0,0.25); }
+  33%  { border-color: #ffff00; box-shadow: 0 0 18px 4px rgba(255,255,0,0.7), 0 0 40px 8px rgba(255,255,0,0.25); }
+  50%  { border-color: #00ff00; box-shadow: 0 0 18px 4px rgba(0,255,0,0.7),   0 0 40px 8px rgba(0,255,0,0.25); }
+  66%  { border-color: #00ccff; box-shadow: 0 0 18px 4px rgba(0,204,255,0.7), 0 0 40px 8px rgba(0,204,255,0.25); }
+  83%  { border-color: #8800ff; box-shadow: 0 0 18px 4px rgba(136,0,255,0.7), 0 0 40px 8px rgba(136,0,255,0.25); }
+  100% { border-color: #ff0000; box-shadow: 0 0 18px 4px rgba(255,0,0,0.7),   0 0 40px 8px rgba(255,0,0,0.25); }
+}
+
 canvas {
   display: block;
-  border: 3px solid #4CAF50;
+  border: 3px solid #ff0000;
   border-radius: 4px;
-  box-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
   max-width: 100%;
+  animation: rgb-border 2.5s linear infinite;
 }
 
 .reminder {
