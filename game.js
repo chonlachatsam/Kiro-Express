@@ -15,7 +15,7 @@ const CONFIG = {
 
   // Physics
   gravity:      0.14,
-  jumpForce:   -5.0,
+  jumpForce:   -3.8,
   maxFall:      5,
 
   // Pipe
@@ -66,6 +66,50 @@ let state = STATE.START;
 let score     = 0;
 let highScore = parseInt(localStorage.getItem(CONFIG.storageKey) || '0', 10);
 
+
+// ── Clouds ──────────────────────────────────────────────────
+const clouds = [];
+(function initClouds() {
+  for (let i = 0; i < 6; i++) {
+    clouds.push({
+      x:     Math.random() * W,
+      y:     20 + Math.random() * (GROUND_Y * 0.55),
+      w:     50 + Math.random() * 60,
+      h:     22 + Math.random() * 18,
+      speed: 0.3 + Math.random() * 0.35,
+      alpha: 0.35 + Math.random() * 0.35,
+    });
+  }
+})();
+
+function updateClouds() {
+  clouds.forEach(c => {
+    c.x -= c.speed;
+    if (c.x + c.w < 0) {
+      c.x     = W + 10;
+      c.y     = 20 + Math.random() * (GROUND_Y * 0.55);
+      c.speed = 0.3 + Math.random() * 0.35;
+      c.alpha = 0.35 + Math.random() * 0.35;
+    }
+  });
+}
+
+function drawClouds() {
+  clouds.forEach(c => {
+    ctx.save();
+    ctx.globalAlpha = c.alpha;
+    ctx.fillStyle   = '#ffffff';
+    // draw fluffy cloud with 3 overlapping ellipses
+    const rx = c.w / 2;
+    const ry = c.h / 2;
+    ctx.beginPath();
+    ctx.ellipse(c.x + rx * 0.5, c.y + ry * 0.6, rx * 0.55, ry * 0.7, 0, 0, Math.PI * 2);
+    ctx.ellipse(c.x + rx,       c.y + ry * 0.4, rx * 0.65, ry * 0.85, 0, 0, Math.PI * 2);
+    ctx.ellipse(c.x + rx * 1.5, c.y + ry * 0.6, rx * 0.55, ry * 0.7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
 // ── Ghosty ──────────────────────────────────────────────────
 const ghosty = {
   x:  90,
@@ -289,12 +333,14 @@ canvas.addEventListener('touchstart', e => { e.preventDefault(); handleInput(); 
 // ── Main loop ────────────────────────────────────────────────
 function loop(now) {
   if (state === STATE.PLAYING) {
+    updateClouds();
     ghosty.update();
     updatePipes(now);
     if (checkCollision()) triggerGameOver();
   }
 
   drawBackground();
+  drawClouds();
   pipes.forEach(renderPipe);
   ghosty.render();
   drawGround();
@@ -309,3 +355,5 @@ function loop(now) {
 // ── Boot ─────────────────────────────────────────────────────
 ghostyImg.onload  = () => requestAnimationFrame(loop);
 ghostyImg.onerror = () => requestAnimationFrame(loop);
+
+
