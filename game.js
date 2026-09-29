@@ -1,35 +1,57 @@
 ﻿// ============================================================
-//  Flappy Kiro — game.js
+//  Game Rai — game.js
 // ============================================================
 
 const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
 
-// ── Constants ──────────────────────────────────────────────
-const W             = canvas.width;   // 400
-const H             = canvas.height;  // 600
-const GROUND_H      = 60;
-const GROUND_Y      = H - GROUND_H;
+// ── Centralized CONFIG object ───────────────────────────────
+// แก้ค่าเกมทั้งหมดได้ที่นี่ที่เดียว
+const CONFIG = {
+  // Canvas
+  width:        400,
+  height:       600,
+  groundHeight: 60,
 
-const GRAVITY       = 0.14;
-const JUMP_FORCE    = -5.0;
-const MAX_FALL      = 5;
+  // Physics
+  gravity:      0.14,
+  jumpForce:   -5.0,
+  maxFall:      5,
 
-const PIPE_SPEED    = 2.5;
-const PIPE_W        = 60;
-const PIPE_GAP      = 155;
-const PIPE_INTERVAL = 1700; // ms
+  // Pipe
+  pipeSpeed:    1.6,
+  pipeWidth:    60,
+  pipeGap:      155,
+  pipeInterval: 1700,  // ms ระหว่าง spawn
 
-const GHOSTY_W      = 44;
-const GHOSTY_H      = 44;
-const HITBOX_PAD    = 8;    // shrink hitbox on each side
+  // Ghosty
+  ghostySize:   44,
+  hitboxPad:    8,     // shrink hitbox ทุกด้าน
+
+  // Colors
+  colors: {
+    sky:        ['#5BA4CF', '#87CEEB'],
+    ground:     '#8B6914',
+    grass:      '#5D8A3C',
+    pipeBody:   '#4CAF50',
+    pipeCap:    '#388E3C',
+  },
+
+  // Storage
+  storageKey: 'flappyKiroHighScore',
+};
+
+// ── Derived values ──────────────────────────────────────────
+const W        = CONFIG.width;
+const H        = CONFIG.height;
+const GROUND_Y = H - CONFIG.groundHeight;
 
 // ── Assets ─────────────────────────────────────────────────
-const ghostyImg   = new Image();
-ghostyImg.src     = 'assets/ghosty.png';
+const ghostyImg     = new Image();
+ghostyImg.src       = 'assets/ghosty.png';
 
-const jumpSound     = new Audio('assets/jump.wav');
-const gameOverSound = new Audio('assets/game_over.wav');
+const jumpSound      = new Audio('assets/jump.wav');
+const gameOverSound  = new Audio('assets/game_over.wav');
 
 function playSound(audio) {
   audio.currentTime = 0;
@@ -42,54 +64,53 @@ let state = STATE.START;
 
 // ── Score ───────────────────────────────────────────────────
 let score     = 0;
-let highScore = parseInt(localStorage.getItem('flappyKiroHighScore') || '0', 10);
+let highScore = parseInt(localStorage.getItem(CONFIG.storageKey) || '0', 10);
 
 // ── Ghosty ──────────────────────────────────────────────────
 const ghosty = {
   x:  90,
-  y:  H / 2 - GHOSTY_H / 2,
+  y:  H / 2 - CONFIG.ghostySize / 2,
   vy: 0,
 
   reset() {
-    this.y  = H / 2 - GHOSTY_H / 2;
+    this.y  = H / 2 - CONFIG.ghostySize / 2;
     this.vy = 0;
   },
 
   jump() {
-    this.vy = JUMP_FORCE;
+    this.vy = CONFIG.jumpForce;
     playSound(jumpSound);
   },
 
   update() {
-    this.vy = Math.min(this.vy + GRAVITY, MAX_FALL);
+    this.vy = Math.min(this.vy + CONFIG.gravity, CONFIG.maxFall);
     this.y += this.vy;
   },
 
   hitbox() {
     return {
-      x: this.x + HITBOX_PAD,
-      y: this.y + HITBOX_PAD,
-      w: GHOSTY_W - HITBOX_PAD * 2,
-      h: GHOSTY_H - HITBOX_PAD * 2,
+      x: this.x + CONFIG.hitboxPad,
+      y: this.y + CONFIG.hitboxPad,
+      w: CONFIG.ghostySize - CONFIG.hitboxPad * 2,
+      h: CONFIG.ghostySize - CONFIG.hitboxPad * 2,
     };
   },
 
   render() {
-    if (ghostyImg.complete) {
-      ctx.drawImage(ghostyImg, this.x, this.y, GHOSTY_W, GHOSTY_H);
+    if (ghostyImg.complete && ghostyImg.naturalWidth > 0) {
+      ctx.drawImage(ghostyImg, this.x, this.y, CONFIG.ghostySize, CONFIG.ghostySize);
     } else {
-      // fallback circle if image not loaded
       ctx.fillStyle = '#fff';
       ctx.beginPath();
-      ctx.arc(this.x + GHOSTY_W / 2, this.y + GHOSTY_H / 2, GHOSTY_W / 2, 0, Math.PI * 2);
+      ctx.arc(this.x + CONFIG.ghostySize / 2, this.y + CONFIG.ghostySize / 2, CONFIG.ghostySize / 2, 0, Math.PI * 2);
       ctx.fill();
     }
   },
 };
 
 // ── Pipes ───────────────────────────────────────────────────
-let pipes         = [];
-let lastPipeTime  = 0;
+let pipes        = [];
+let lastPipeTime = 0;
 
 function spawnPipe(now) {
   const minGapY = 120;
@@ -100,52 +121,45 @@ function spawnPipe(now) {
 }
 
 function updatePipes(now) {
-  // spawn
-  if (now - lastPipeTime > PIPE_INTERVAL) spawnPipe(now);
+  if (now - lastPipeTime > CONFIG.pipeInterval) spawnPipe(now);
 
-  pipes.forEach(p => { p.x -= PIPE_SPEED; });
+  pipes.forEach(p => { p.x -= CONFIG.pipeSpeed; });
 
-  // score
   pipes.forEach(p => {
-    if (!p.passed && p.x + PIPE_W < ghosty.x) {
+    if (!p.passed && p.x + CONFIG.pipeWidth < ghosty.x) {
       p.passed = true;
       score++;
       if (score > highScore) {
         highScore = score;
-        localStorage.setItem('flappyKiroHighScore', highScore);
+        localStorage.setItem(CONFIG.storageKey, highScore);
       }
     }
   });
 
-  // cleanup
-  pipes = pipes.filter(p => p.x + PIPE_W > 0);
+  pipes = pipes.filter(p => p.x + CONFIG.pipeWidth > 0);
 }
 
-function pipeHitboxTop(p)    { return { x: p.x, y: 0,                    w: PIPE_W, h: p.gapY - PIPE_GAP / 2 }; }
-function pipeHitboxBottom(p) { return { x: p.x, y: p.gapY + PIPE_GAP / 2, w: PIPE_W, h: GROUND_Y - (p.gapY + PIPE_GAP / 2) }; }
+function pipeHitboxTop(p)    { return { x: p.x, y: 0,                           w: CONFIG.pipeWidth, h: p.gapY - CONFIG.pipeGap / 2 }; }
+function pipeHitboxBottom(p) { return { x: p.x, y: p.gapY + CONFIG.pipeGap / 2, w: CONFIG.pipeWidth, h: GROUND_Y - (p.gapY + CONFIG.pipeGap / 2) }; }
 
 function renderPipe(p) {
-  const topH    = p.gapY - PIPE_GAP / 2;
-  const botY    = p.gapY + PIPE_GAP / 2;
+  const topH    = p.gapY - CONFIG.pipeGap / 2;
+  const botY    = p.gapY + CONFIG.pipeGap / 2;
   const botH    = GROUND_Y - botY;
   const capH    = 20;
   const capOver = 6;
 
-  // top pipe body
-  ctx.fillStyle = '#4CAF50';
-  ctx.fillRect(p.x, 0, PIPE_W, topH - capH);
+  ctx.fillStyle = CONFIG.colors.pipeBody;
+  ctx.fillRect(p.x, 0, CONFIG.pipeWidth, topH - capH);
 
-  // top pipe cap
-  ctx.fillStyle = '#388E3C';
-  ctx.fillRect(p.x - capOver, topH - capH, PIPE_W + capOver * 2, capH);
+  ctx.fillStyle = CONFIG.colors.pipeCap;
+  ctx.fillRect(p.x - capOver, topH - capH, CONFIG.pipeWidth + capOver * 2, capH);
 
-  // bottom pipe body
-  ctx.fillStyle = '#4CAF50';
-  ctx.fillRect(p.x, botY + capH, PIPE_W, botH - capH);
+  ctx.fillStyle = CONFIG.colors.pipeBody;
+  ctx.fillRect(p.x, botY + capH, CONFIG.pipeWidth, botH - capH);
 
-  // bottom pipe cap
-  ctx.fillStyle = '#388E3C';
-  ctx.fillRect(p.x - capOver, botY, PIPE_W + capOver * 2, capH);
+  ctx.fillStyle = CONFIG.colors.pipeCap;
+  ctx.fillRect(p.x - capOver, botY, CONFIG.pipeWidth + capOver * 2, capH);
 }
 
 // ── Collision ───────────────────────────────────────────────
@@ -158,14 +172,8 @@ function overlaps(a, b) {
 
 function checkCollision() {
   const hb = ghosty.hitbox();
-
-  // ceiling
   if (ghosty.y <= 0) return true;
-
-  // ground
-  if (ghosty.y + GHOSTY_H >= GROUND_Y) return true;
-
-  // pipes
+  if (ghosty.y + CONFIG.ghostySize >= GROUND_Y) return true;
   for (const p of pipes) {
     if (overlaps(hb, pipeHitboxTop(p)) || overlaps(hb, pipeHitboxBottom(p))) return true;
   }
@@ -174,48 +182,43 @@ function checkCollision() {
 
 // ── Render helpers ──────────────────────────────────────────
 function drawBackground() {
-  // sky gradient
   const sky = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-  sky.addColorStop(0, '#5BA4CF');
-  sky.addColorStop(1, '#87CEEB');
+  sky.addColorStop(0, CONFIG.colors.sky[0]);
+  sky.addColorStop(1, CONFIG.colors.sky[1]);
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, GROUND_Y);
 }
 
 function drawGround() {
-  ctx.fillStyle = '#8B6914';
-  ctx.fillRect(0, GROUND_Y, W, GROUND_H);
-  ctx.fillStyle = '#5D8A3C';
+  ctx.fillStyle = CONFIG.colors.ground;
+  ctx.fillRect(0, GROUND_Y, W, CONFIG.groundHeight);
+  ctx.fillStyle = CONFIG.colors.grass;
   ctx.fillRect(0, GROUND_Y, W, 12);
 }
 
 function drawHUD() {
-  ctx.fillStyle    = 'rgba(0,0,0,0.35)';
-  ctx.fillRect(0, H - GROUND_H + 14, W, 28);
-  ctx.fillStyle    = '#fff';
-  ctx.font         = 'bold 16px Arial';
-  ctx.textAlign    = 'center';
-  ctx.fillText('Score: ' + score + '  |  Best: ' + highScore, W / 2, H - GROUND_H + 32);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(0, H - CONFIG.groundHeight + 14, W, 28);
+  ctx.fillStyle = '#fff';
+  ctx.font      = 'bold 16px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Score: ' + score + '  |  Best: ' + highScore, W / 2, H - CONFIG.groundHeight + 32);
 }
 
 function drawStartScreen() {
-  // dim overlay
   ctx.fillStyle = 'rgba(0,0,0,0.45)';
   ctx.fillRect(0, 0, W, H);
-
   ctx.textAlign = 'center';
 
-  // title
-  ctx.font      = 'bold 42px Arial';
-  ctx.fillStyle = '#FFD700';
-  ctx.shadowColor = '#000'; ctx.shadowBlur = 8;
-  ctx.fillText('Flappy Kiro', W / 2, H / 2 - 90);
-  ctx.shadowBlur = 0;
+  ctx.font        = 'bold 42px Arial';
+  ctx.fillStyle   = '#FFD700';
+  ctx.shadowColor = '#000';
+  ctx.shadowBlur  = 8;
+  ctx.fillText('Game Rai', W / 2, H / 2 - 90);
+  ctx.shadowBlur  = 0;
 
-  // ghosty preview
-  ctx.drawImage(ghostyImg, W / 2 - GHOSTY_W / 2, H / 2 - 40, GHOSTY_W, GHOSTY_H);
+  ctx.drawImage(ghostyImg, W / 2 - CONFIG.ghostySize / 2, H / 2 - 40, CONFIG.ghostySize, CONFIG.ghostySize);
 
-  // instruction
   ctx.font      = '18px Arial';
   ctx.fillStyle = '#fff';
   ctx.fillText('Press  Space  or  Click  to  Start', W / 2, H / 2 + 55);
@@ -230,14 +233,14 @@ function drawStartScreen() {
 function drawGameOverScreen() {
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
   ctx.fillRect(0, 0, W, H);
-
   ctx.textAlign = 'center';
 
-  ctx.font      = 'bold 44px Arial';
-  ctx.fillStyle = '#FF5252';
-  ctx.shadowColor = '#000'; ctx.shadowBlur = 8;
+  ctx.font        = 'bold 44px Arial';
+  ctx.fillStyle   = '#FF5252';
+  ctx.shadowColor = '#000';
+  ctx.shadowBlur  = 8;
   ctx.fillText('Game Over', W / 2, H / 2 - 70);
-  ctx.shadowBlur = 0;
+  ctx.shadowBlur  = 0;
 
   ctx.font      = 'bold 26px Arial';
   ctx.fillStyle = '#fff';
@@ -268,13 +271,9 @@ function triggerGameOver() {
 }
 
 function handleInput() {
-  if (state === STATE.START) {
-    startGame();
-  } else if (state === STATE.PLAYING) {
-    ghosty.jump();
-  } else if (state === STATE.OVER) {
-    startGame();
-  }
+  if (state === STATE.START)   startGame();
+  else if (state === STATE.PLAYING) ghosty.jump();
+  else if (state === STATE.OVER)    startGame();
 }
 
 // ── Input listeners ──────────────────────────────────────────
@@ -289,28 +288,24 @@ canvas.addEventListener('touchstart', e => { e.preventDefault(); handleInput(); 
 
 // ── Main loop ────────────────────────────────────────────────
 function loop(now) {
-  // ── update ──
   if (state === STATE.PLAYING) {
     ghosty.update();
     updatePipes(now);
     if (checkCollision()) triggerGameOver();
   }
 
-  // ── render ──
   drawBackground();
   pipes.forEach(renderPipe);
   ghosty.render();
   drawGround();
 
   if (state === STATE.PLAYING || state === STATE.OVER) drawHUD();
-  if (state === STATE.START)  drawStartScreen();
-  if (state === STATE.OVER)   drawGameOverScreen();
+  if (state === STATE.START) drawStartScreen();
+  if (state === STATE.OVER)  drawGameOverScreen();
 
   requestAnimationFrame(loop);
 }
 
 // ── Boot ─────────────────────────────────────────────────────
-ghostyImg.onload = () => requestAnimationFrame(loop);
-ghostyImg.onerror = () => requestAnimationFrame(loop); // fallback if image fails
-
-
+ghostyImg.onload  = () => requestAnimationFrame(loop);
+ghostyImg.onerror = () => requestAnimationFrame(loop);
