@@ -249,6 +249,41 @@ function drawHUD() {
   ctx.fillText('Score: ' + score + '  |  Best: ' + highScore, W / 2, H - CONFIG.groundHeight + 32);
 }
 
+// ── Play Button ─────────────────────────────────────────────
+const playBtn = { x: W / 2, y: 0, r: 36 }; // r = radius, y set dynamically when drawn
+
+function drawPlayButton(cy) {
+  playBtn.y = cy;
+  const r = playBtn.r;
+
+  // outer circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(W / 2, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.shadowColor = '#000';
+  ctx.shadowBlur  = 12;
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+
+  // play triangle (rounded feel via lineTo)
+  const tx = W / 2 - 10;
+  const ty = cy;
+  ctx.beginPath();
+  ctx.moveTo(tx - 10, ty - 16);
+  ctx.lineTo(tx - 10, ty + 16);
+  ctx.lineTo(tx + 20, ty);
+  ctx.closePath();
+  ctx.fillStyle = '#4CAF50';
+  ctx.fill();
+  ctx.restore();
+}
+
+function isOnPlayButton(mx, my) {
+  const dx = mx - playBtn.x;
+  const dy = my - playBtn.y;
+  return Math.sqrt(dx * dx + dy * dy) <= playBtn.r + 10;
+}
 function drawStartScreen() {
   ctx.fillStyle = 'rgba(0,0,0,0.45)';
   ctx.fillRect(0, 0, W, H);
@@ -263,9 +298,7 @@ function drawStartScreen() {
 
   ctx.drawImage(ghostyImg, W / 2 - CONFIG.ghostySize / 2, H / 2 - 40, CONFIG.ghostySize, CONFIG.ghostySize);
 
-  ctx.font      = '18px Arial';
-  ctx.fillStyle = '#fff';
-  ctx.fillText('Press  Space  or  Click  to  Start', W / 2, H / 2 + 55);
+  drawPlayButton(H / 2 + 60);
 
   if (highScore > 0) {
     ctx.font      = '16px Arial';
@@ -294,9 +327,7 @@ function drawGameOverScreen() {
   ctx.fillStyle = '#FFD700';
   ctx.fillText('Best: ' + highScore, W / 2, H / 2 + 18);
 
-  ctx.font      = '17px Arial';
-  ctx.fillStyle = '#ccc';
-  ctx.fillText('Press  Space  or  Click  to  Retry', W / 2, H / 2 + 65);
+  drawPlayButton(H / 2 + 80);
 }
 
 // ── Game control ─────────────────────────────────────────────
@@ -327,8 +358,32 @@ document.addEventListener('keydown', e => {
     handleInput();
   }
 });
-canvas.addEventListener('click',      () => handleInput());
-canvas.addEventListener('touchstart', e => { e.preventDefault(); handleInput(); }, { passive: false });
+canvas.addEventListener('click', e => {
+  if (state === STATE.PLAYING) {
+    ghosty.jump();
+  } else {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top)  * scaleY;
+    if (isOnPlayButton(mx, my)) handleInput();
+  }
+});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (state === STATE.PLAYING) {
+    ghosty.jump();
+  } else {
+    const t    = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    const mx = (t.clientX - rect.left) * scaleX;
+    const my = (t.clientY - rect.top)  * scaleY;
+    if (isOnPlayButton(mx, my)) handleInput();
+  }
+}, { passive: false });
 
 // ── Main loop ────────────────────────────────────────────────
 function loop(now) {
@@ -355,5 +410,6 @@ function loop(now) {
 // ── Boot ─────────────────────────────────────────────────────
 ghostyImg.onload  = () => requestAnimationFrame(loop);
 ghostyImg.onerror = () => requestAnimationFrame(loop);
+
 
 
